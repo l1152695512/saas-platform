@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: survey
+  jpa:
+    show-sql: true
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    generate-ddl: false
+  datasource:
+    url: jdbc:mysql://10.201.2.13:3306/saas_survey?useUnicode\=true&characterEncoding\=UTF-8&zeroDateTimeBehavior\=convertToNull
+    username: mq-user
+    password: redhat
+    data: classpath*:/data.sql
+    data-username: mq-user
+    data-password: redhat
+    schema: classpath*:/schema.sql
+    schema-username: db_user
+    schema-password: z5J9OT0urtbfVuRuViK7
+    continue-on-error: true
+    initialize: true
+server:
+  port: 8783
+eureka:
+  instance:
+    metadata-map:
+        description: 问卷系统
+        version: ${version}
+    appname: survey
+    app-group-name: business
+
+logging:
+  level: debug

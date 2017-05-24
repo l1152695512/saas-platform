@@ -1,0 +1,9 @@
+---
+
+spring:
+  profiles:
+    eureka
+  application:
+    name: eureka
+server:
+  port: 8761

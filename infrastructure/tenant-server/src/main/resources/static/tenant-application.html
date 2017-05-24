@@ -1,0 +1,128 @@
+<div ng-controller="TenantApplicationController">
+    <table class="table table-bordered">
+        <caption>
+            <h3>租户：{{tenantId}}</h3>
+            <div class="fixed-table-toolbar pull-right">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        租户服务状态
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:void(0)" ng-click="filterStatus=undefined">显示所有</a></li>
+                        <li><a href="javascript:void(0)" ng-click="filterStatus='AVAILABLE'">可用</a></li>
+                        <li><a href="javascript:void(0)" ng-click="filterStatus='UNAVAILABLE'">不可用</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default" type="button" title="添加租户" data-toggle="modal" data-target="#modal"><i class="glyphicon glyphicon-plus"></i></button>
+                </div>
+            </div>
+        </caption>
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>服务id</th>
+            <th>服务名字</th>
+            <th>租户服务有效期</th>
+            <th>租户服务描述</th>
+            <th>租户服务配置信息</th>
+            <th>租户服务状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in data" ng-show="filterStatus === undefined || item.status === filterStatus">
+            <td>{{$index+1}}</td>
+            <td>{{item.applicationId}}</td>
+            <td>{{item.application.name}}</td>
+            <td>从<code>{{item.startTime|date:'yyyy-MM-dd HH:mm:ss'}}</code>至<code>{{item.endTime|date:'yyyy-MM-dd HH:mm:ss'}}</code></td>
+            <td>{{item.description}}</td>
+            <td>{{item.properties}}</td>
+            <td>{{item.status === 'AVAILABLE' ? '可用' : '不可用'}}</td>
+            <td style="text-align: right">
+                <button ng-hide="item.status === 'AVAILABLE'" class="btn btn-warning" type="button" title="禁用该租户服务" ng-click="enableTenantApplication($index,item.applicationId)"><i class="glyphicon glyphicon-repeat"></i></button>
+                <button ng-hide="item.status !== 'AVAILABLE'" class="btn btn-warning" type="button" title="禁用该租户服务" ng-click="disableTenantApplication($index,item.applicationId)"><i class="glyphicon glyphicon-off"></i></button>
+            </td>
+        </tr>
+        </tbody>
+        <tbody></tbody>
+    </table>
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true" ng-init="initApplications()">
+        <div class="modal-dialog  modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">请选择服务</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>序号 </th>
+                            <th>服务ID</th>
+                            <th>服务名字</th>
+                            <th>所在服务组</th>
+                            <th>服务版本</th>
+                            <th>服务描述</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in applications" ng-hide="item.status === 'UNAVAILABLE'" >
+                            <td><input type="radio" name="{{tenantId}}" ng-value="item.id" ng-click="showRequiredProperties(item.id)" /></td>
+                            <td>{{item.id}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.group}}</td>
+                            <td>{{item.version}}</td>
+                            <td>{{item.description}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <form class="form-horizontal" name="applicationPropertiesForm" novalidate>
+                        <section class="section-bordered">
+                            <div class="select-position">基本属性</div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label control-label-required" >
+                                    有效期从
+                                </label>
+                                <div class="col-sm-3">
+                                    <input class="form-control" type="date" ng-model="tenantApplication.startTime" required>
+                                </div>
+                                <label style="float:left;padding-top: 7px;margin-bottom: 0;">
+                                    到
+                                </label>
+                                <div class="col-sm-3">
+                                    <input class="form-control" type="date" ng-model="tenantApplication.endTime" required>
+                                </div>
+                            </div>
+                            <div class="form-group" >
+                                <label class="col-sm-3 control-label" >
+                                    描述
+                                </label>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control" ng-model="tenantApplication.description" placeholder="请输入租户服务的描述"></textarea>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="section-bordered" ng-show="requiredProperties" style="margin-top:16px">
+                            <div class="select-position">服务的必须配置项</div>
+                            <div class="form-group" ng-repeat="(key,defaultValue) in requiredProperties">
+                                <label class="col-sm-3 control-label control-label-required" >
+                                    <code>{{key}}</code>
+                                </label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" placeholder="{{defaultValue}}" ng-model="tenantApplication.properties[key]" required>
+                                </div>
+                            </div>
+                        </section>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-warning" ng-click="addApplication()" ng-disabled="applicationPropertiesForm.$invalid">开通服务</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

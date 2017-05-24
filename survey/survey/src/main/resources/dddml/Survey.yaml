@@ -1,0 +1,418 @@
+#%DDDML 0.1
+enumObjects:
+    AccessRule:
+        PUBLIC:
+            displayName: 不做限制
+        ONCE_PER_USER:
+            displayName: 每个用户限填一次
+        ONCE_PER_DEVICE:
+            displayName: 每台电脑/手机/平板限填一次
+        ONCE_PER_IP:
+            displayName: 每个IP限填一次
+        TOKEN:
+            displayNmae: 凭令牌填写
+    LogicOperator:
+        DISPLAYED:
+            displayName: 显示
+        CHECKED:
+            displayName: 选中
+        UNCHECKED:
+            displayName: 不选中
+        EQUAL:
+            displayName: 等于
+        UNEQUAL:
+            displayName: 不等于
+        CONTAINS:
+            displayName: 包含
+        GREATER_THAN:
+            displayName: 大于
+        GREATER_EQUAL:
+            displayName: 大于等于
+        LESS_THAN:
+            displayName: 小于
+        LESS_EQUAL:
+            displayName: 小于等于
+    QuestionAction:
+        JUMP:
+            displayName: 跳转
+        COMPLETE:
+            displayName: 正常结束
+        TERMINATE:
+            displayName: 终止
+    QuestionType:
+        LIST_RADIO:
+            displayName: 单选
+        LIST_DROPDOWN:
+            displayName: 下拉
+        SECONDARY_DROPDOWN:
+            displayName: 二级下拉
+        MULTIPLE_CHOICE:
+            displayName: 多选题
+
+        LONG_FREE_TEXT:
+            displayName: 多行文字
+        SHORT_FREE_TEXT: 
+            displayName: 单行文字
+
+        NUMERICAL_INPUT:
+            displayName: 数字
+        EMAIL_INPUT: 
+            displayName: 邮箱
+        WEBSITE_INPUT:
+            displayName: 网址
+        TELEPHONE_INPUT:
+            displayName: 电话
+        CELLPHONE_INPUT:
+			displayName: 手机
+        DATE_TIME:
+			displayName: 日期/时间
+        RANKING:
+			displayName: 评分
+        SECTION:
+			displayName: 分段
+        TEXT_DISPLAY:
+			displayName: 文本显示
+        IMAGE_DISPLAY:
+			displayName: 图片显示
+        VIDEO_DISPLAY:
+			displayName: 视频播放
+        FILE_UPLOAD:
+			displayName: 文件上传
+        IMAGE_UPLOAD:
+			displayName: 图片上传
+        AUDIO_UPLOAD:
+			displayName: 音频上传
+        ARRAY:
+			displayName: 矩阵
+        ARRAY_NUMBERS:
+			displayName: 矩阵数字
+        ARRAY_TEXTS:
+			displayName: 矩阵文本
+        ARRAY_RADIO:
+			displayName: 矩阵单选
+
+        GEO:
+            displayName: 地理位置
+        WEB:
+            displayName: WEB页面
+        ADDRESS:
+            displayName: 地址
+        SHARE:
+            displayName: 转发分享
+        WECHAT_SHARE:
+            displayName: 微信转发
+        WEIBO_SHARE:
+            displayName: 微博转发
+
+    SurveyFormat:
+        QUESTION_BY_QUESTION:
+            displayName: 按题分页
+        GROUP_BY_GROUP:
+            displayName: 按组分页
+        ALL_IN_ONE:
+            displayName: 全部都在一页
+
+aggregates:
+    SurveyAccessToken:
+        id:
+            TokenId:
+                type: string
+                length : 50
+        properties:
+            SurveyId:
+                displayName: 问卷
+                description: 这个token所关联的问卷
+                referenceType: Survey
+            Blacklisted:
+                type: boolean
+                description: 是否被列入了黑名单
+                displayName: 黑名单
+            Completed:
+                type: boolean
+                description: 是否完成
+            AvailableTimes:
+                type: int
+                desciption: 可用次数
+            StartTime:
+                type: datetime
+                desciption: 开始时间
+            EndTime:
+                type: datetime
+                desciption: 结束时间
+            TokenType:
+                type: string
+                desciption: Token 类型
+    Survey:
+        displayName: 问卷
+        description: 通过表单回收数据，可以作数据统计，查看分布等作用
+        id:
+            Id:
+              type: long
+        properties:
+            UserId:
+                type: string
+                description: 用户id
+            ServiceId:
+                type: string
+                description: 服务id
+            Title:
+                type: string
+                length: 200
+                description: 问卷标题
+            Description:
+                type: string
+                length: 1000
+                description: 问卷描述
+            WelcomeText:
+                type: string
+                length: 1000
+                description: 问卷的欢迎语
+            TerminationText:
+                type: string
+                length: 1000
+                description: 问卷的终止语
+            EndText:
+                type: string
+                length: 1000
+                description: 问卷的结束语
+            EndUrl:
+                type: string
+                length: 500
+                description: 问卷结束跳转的url
+            EndUrlDescription:
+                type: string
+                length: 1000
+                description: 结束的url描述
+            Active:
+                type: boolean
+                description: 是否启用
+            ActiveTime:
+                type: datetime
+                description: 启用时间
+            ExpiryTime:
+                type: datetime
+                description: 过期时间
+            Setting:
+                referenceType: SurveySetting
+                description: 问卷设置
+            QuestionAmount:
+                type: int
+                description: 问题数量
+            Questions:
+                itemType: Question
+                description: 问题集合
+        entities:
+            Question:
+                id:
+                    Id:
+                        type: string
+                        description: 问题的唯一标识
+                properties:
+                    ParentId:
+                        type: string
+                        description: 父问题id
+                    Type:
+                        referenceType: QuestionType
+                        description: 问题类型
+                    Title:
+                        type: string
+                        description: 标题
+                    Image:
+                        type: string
+                        description: 标题图片
+                    Help:
+                        type: string
+                        description: 帮助文本
+                    Sequence:
+                        type: int
+                        description: 问题序号
+                    Mandatory:
+                        type: boolean
+                        description: 是否必须作答
+                    DefaultAnswer:
+                        type: string
+                        description: 默认的回答
+                    Content:
+                        type: string
+                        description: 问题内容/选项
+                    QuestionLogic:
+                        itemType: QuestionLogic
+                        description: 关联在这个问题上的跳转逻辑
+
+                entities:
+                    QuestionLogic:
+                        id:
+                            id:
+                                type: int
+                        properties:
+                            Question:
+                                refereceType: Question
+                                description: 关联的问题
+                            TargetQuestion:
+                                referenceType: Question
+                                description: 要跳转的目标问题
+                            Action:
+                                referenceType: QuestionAction
+                                description: 跳转类型
+                            Conditions:
+                                itemType: LogicPredicate
+                                description: 跳转的条件设置
+                        valueObjects:
+                            LogicPredicate:
+                                properties:
+                                    Operator:
+                                        referenceType: LogicOperator
+                                        description: 条件的逻辑运算符
+                                    Code:
+                                        type: string
+                                        description: 条件与条件的链接符
+                                    Value:
+                                        type: string
+                                        description: 必须匹配的值
+            Quota:
+                id:
+                    Id:
+                        type: string
+                properties:
+                    Name:
+                        type: string
+                        description: 名字
+                    Quantity:
+                        type: int
+                        description: 限制数量
+                    Active:
+                        type: boolean
+                        description: 是否被激活
+                    Message:
+                        type: string
+                        description: 超过配额时的提示信息
+                    AutoLoadUrl:
+                        type: string
+                        description: 超过配额时自动跳转的地址
+                    Members:
+                        type: string
+                        description: 陪额的成员
+                entities:
+                    AnswerQuota:
+                        id:
+                            QuestionId:
+                                type: string
+                                description: 问题Id
+                            Code:
+                                type: string
+                                descrption: 选项Id
+
+            SurveySetting:
+                id:
+                    SurveyId:
+                        type: long
+                properties:
+                    Template:
+                        type: string
+                        description: 外观模版，保留
+                    AutoRedirect:
+                        type: boolean
+                        description: 是否提交后自动跳转
+                    ShowWelcome:
+                        type: boolean
+                        description: 是否显示欢迎信息
+                    ShowProgress:
+                        type: boolean
+                        description: 是否显示进度条
+                    ShowGroupInfo:
+                        type: boolean
+                        description: 是否显示分组信息
+                    ShowQuestionSeqNo:
+                        type: boolean
+                        descprion: 是否显示问题序号
+                    AllowPrev:
+                        type: boolean
+                        description: 是否允许上一步
+                    AllowSuspend:
+                        type: boolean
+                        description: 是否允许中断
+                    allowEditAfterCompletion:
+                        type: boolean
+                        description: 是否允许答题后修改
+                    Format:
+                        referenceType: SurveyFormat
+                        description: 显示格式
+                    Locale:
+                        type: string
+                        description: 默认的发布语言
+                    ResponseLimit:
+                        type: int
+                        description: 参与份数限制
+                    AccessRule:
+                        referenceType: AccessRule
+                    OpenQuestionSeqNo:
+                        type: boolean
+                        description: 是否公开答题序号
+                    OpenStatistics:
+                        type: boolean
+                        description: 是否公开结果
+                    UseCaptcha:
+                        type: boolean
+                        description: 提交答卷时是否启用验证码
+                    EnableAssessment:
+                        type: boolean
+                        description: 是否启用评价模式
+    SurveyResponse:
+        id:
+            Id:
+                type: long
+        properties:
+            SurveyId:
+                type: long
+                description: 问卷id
+            UserId:
+                type: string
+                description: 用户id
+            ServiceId:
+                type: string
+                description: 服务id
+            DeviceId:
+                type: string
+                description: 设备的唯一标识
+            IpAddress:
+                type: string
+                description: ip地址
+
+	        LastQuestionId:
+                type: long
+                description: 最后回答的问题
+            Submitted:
+                type: boolean
+                description: 是否提交
+            StartTime:
+                type: datetime
+                description: 开始时间
+            SubmitTime:
+                type: datetime
+                description: 提交时间
+            TerminationTime:
+                type: datetime
+                description: 终止时间
+            InterviewTime:
+                type: datetime
+                description: 参与问卷所花费的时间(单位:秒)
+            Items:
+                referenceType: ReponseItem
+                description: 每一个具体问题的回复
+        entities:
+            ReponseItem:
+                id:
+                    QuestionId:
+                        type: int
+                        description: 问题的id
+                properties:
+                    ResponseText:
+                        type: string
+                        description: 回复内容
+                    SubmitTime:
+                        type: datetime
+                        description: 提交答案的时间
+                    InterviewTime:
+                        type: long
+                        description: 提交答案耗费的时间(单位:秒)
+

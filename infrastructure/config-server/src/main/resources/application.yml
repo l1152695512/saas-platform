@@ -1,0 +1,28 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    enabled: true
+    register-with-eureka: true
+  instance:
+    metadata-map:
+        dependencies:
+            - 'didi'
+            - 'tenant'
+
+server:
+  port: 8888
+
+logging:
+  level:
+    com.netflix.discovery: 'OFF'
+    org.springframework.cloud: 'DEBUG'
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/lanmolsz/config-repo.git
+          basedir: target/config
+

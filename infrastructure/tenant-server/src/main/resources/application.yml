@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: tenant
+  datasource:
+    url: jdbc:mysql://10.201.2.13:3306/tenant?useUnicode\=true&characterEncoding\=UTF-8&zeroDateTimeBehavior\=convertToNull
+    username: mq-user
+    password: redhat
+    #data和schema的初始化sql脚本默认名字也是data.sql和schema.sql, 也就是说其实这里不用显示配置也没关系。
+    #可以查看org.springframework.boot.autoconfigure.jdbc.DataSourceInitializer类了解数据库初始化的相关逻辑
+    data: data.sql
+    data-username: mq-user
+    data-password: redhat
+    schema: schema.sql
+    schema-username: db_user
+    schema-password: z5J9OT0urtbfVuRuViK7
+    continue-on-error: true
+    initialize: false
+  jpa:
+    show-sql: true
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  aop:
+    proxy-target-class: true
+
+server:
+  port: 8762
+
+eureka:
+  instance:
+    appname: tenant management service
+    app-group-name: infrastructure
+    metadata-map:
+        dependencies: eureka
+        master : true
+        version: 0.0.1-SNAPSHOT
+        description: 租户管理系统，提供租户的基本管理能力（例如：增加租户，初始化租户，为某各租户开通或者禁用某个服务，删除租户）
+logging:
+  level: debug

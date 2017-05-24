@@ -1,0 +1,27 @@
+<table class="table table-bordered" ng-controller="ApplicationTenantController">
+    <caption>
+        <h3>服务：{{applicationId}}</h3>
+    </caption>
+    <thead>
+    <tr>
+        <th>序号 </th>
+        <th>租户ID</th>
+        <th>租户名字</th>
+        <th>租户服务有效期</th>
+        <th>租户服务描述</th>
+        <th>租户服务配置信息</th>
+        <th>租户服务状态</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in data">
+        <td>{{$index+1}}</td>
+        <td>{{item.tenant.id}}</td>
+        <td>{{item.tenant.name}}</td>
+        <td>从<code>{{item.startTime|date:'yyyy-MM-dd HH:mm:ss'}}</code>至<code>{{item.endTime|date:'yyyy-MM-dd HH:mm:ss'}}</code></td>
+        <td>{{item.description}}</td>
+        <td>{{item.properties}}</td>
+        <td>{{item.status === 'AVAILABLE' ? '可用' : '不可用'}}</td>
+    </tr>
+    </tbody>
+</table>

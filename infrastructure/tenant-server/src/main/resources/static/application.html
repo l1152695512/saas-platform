@@ -1,0 +1,62 @@
+<table class="table table-bordered" ng-controller="ApplicationController">
+    <caption>
+        <div class="fixed-table-toolbar pull-right">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    租户状态
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0)" ng-click="filterStatus=undefined">显示所有</a></li>
+                    <li><a href="javascript:void(0)" ng-click="filterStatus='AVAILABLE'">可用</a></li>
+                    <li><a href="javascript:void(0)" ng-click="filterStatus='UNAVAILABLE'">不可用</a></li>
+                </ul>
+            </div>
+        </div>
+    </caption>
+    <thead>
+    <tr>
+        <th>序号 </th>
+        <th>服务ID</th>
+        <th>服务名字</th>
+        <th>所在服务组</th>
+        <th>服务版本</th>
+        <th>服务描述</th>
+        <th>服务状态</th>
+        <th>服务依赖</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in data" ng-show="filterStatus === undefined || item.status === filterStatus">
+        <td>{{$index+1}}</td>
+        <td>{{item.id}}</td>
+        <td>{{item.name}}</td>
+        <td>{{item.group}}</td>
+        <td>{{item.version}}</td>
+        <td>{{item.description}}</td>
+        <td>{{item.status === 'AVAILABLE' ? '可用' : '不可用'}}</td>
+        <td>
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div ng-repeat="dependency in item.dependencies" class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="collapsed">
+                                {{dependency}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" aria-expanded="false" style="height: 0px;">
+                        <div class="panel-body">
+                            租户
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td>
+            <a class="btn btn-default" href="#/applications/{{item.id}}/tenants" title="查看租户列表"><i class="glyphicon glyphicon-list"></i></a>
+        </td>
+    </tr>
+    </tbody>
+</table>

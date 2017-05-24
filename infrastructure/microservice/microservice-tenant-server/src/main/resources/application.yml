@@ -1,0 +1,15 @@
+#spring:
+#  command:
+#    mongodb:
+#      host: 10.200.50.55
+#      port: 27017
+#      database: tenant_model
+#      name: tenant
+#      password: tenant123
+#  query:
+#    mongodb:
+#      host: 10.200.50.55
+#      port: 27017
+#      database: tenant_view
+#      name: tenant
+#      password: tenant123
