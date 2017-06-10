@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -41,8 +40,8 @@ public class SurveyAccessToken implements JacksonSerializable {
 	/**
 	 * 可用次数
 	 */
-	@Column(name = "AVAILABLE_TIMES")
-	private int availableTimes;
+	@Column(name = "AVAILABLE_LIMIT")
+	private int availableLimit;
 
 	/**
 	 * 有效期起始时间
@@ -56,11 +55,6 @@ public class SurveyAccessToken implements JacksonSerializable {
 	@Column(name = "END_TIME")
 	private Date endTime;
 
-	/**
-	 * Token 类型
-	 */
-	@Column(name = "TOKEN_TYPE",length = 32)
-	private String tokenType;
 
 
 	public String getTokenId() {
@@ -95,12 +89,12 @@ public class SurveyAccessToken implements JacksonSerializable {
 		this.completed = completed;
 	}
 
-	public int getAvailableTimes() {
-		return availableTimes;
+	public int getAvailableLimit() {
+		return availableLimit;
 	}
 
-	public void setAvailableTimes(int availableTimes) {
-		this.availableTimes = availableTimes;
+	public void setAvailableLimit(int availableLimit) {
+		this.availableLimit = availableLimit;
 	}
 
 	public Date getStartTime() {
@@ -119,11 +113,8 @@ public class SurveyAccessToken implements JacksonSerializable {
 		this.endTime = endTime;
 	}
 
-	public String getTokenType() {
-		return tokenType;
-	}
-
-	public void setTokenType(String tokenType) {
-		this.tokenType = tokenType;
+	public Boolean isEffective(){
+		long current = System.currentTimeMillis();
+		return !completed && !blacklisted && (startTime.getTime() <= current && endTime.getTime() >= current);
 	}
 }

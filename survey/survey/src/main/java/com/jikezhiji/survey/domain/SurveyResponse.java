@@ -32,6 +32,9 @@ public class SurveyResponse extends IdIncrementEntity {
 	@Column(name = "IP_ADDRESS",length = 32)
 	private String ipAddress;
 
+	@Column(name = "ACCESS_TOKEN",length = 32)
+	private String accessToken;
+
 	@Column(name = "LAST_QUESTION_ID")
 	private Long lastQuestionId;
 
@@ -118,6 +121,14 @@ public class SurveyResponse extends IdIncrementEntity {
 		this.ipAddress = ipAddress;
 	}
 
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
+
 	public Long getLastQuestionId() {
 		return lastQuestionId;
 	}
@@ -130,7 +141,7 @@ public class SurveyResponse extends IdIncrementEntity {
 		return submitted;
 	}
 
-	public void setSubmitted(Boolean submitted) {
+	public void setSubmitted(boolean submitted) {
 		this.submitted = submitted;
 	}
 
@@ -191,6 +202,11 @@ public class SurveyResponse extends IdIncrementEntity {
 	public SurveyResponse(Long surveyId) {
 		this.surveyId = surveyId;
 	}
+	public SurveyResponse(Long surveyId,boolean submitted) {
+		this.surveyId = surveyId;
+		this.submitted = submitted;
+	}
+
 
 	public ResponseItem getItem(Long questionId) {
 		if(this.items == null) return null;
