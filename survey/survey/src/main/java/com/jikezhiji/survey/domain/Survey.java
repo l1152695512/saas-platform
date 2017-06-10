@@ -4,6 +4,7 @@ package com.jikezhiji.survey.domain;
 import com.jikezhiji.commons.domain.entity.IdIncrementEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,18 +50,19 @@ public class Survey extends IdIncrementEntity {
 	@Column(name="EXPIRY_TIME")
 	private Date expiryTime;
 
-	@OneToOne(mappedBy="surveyId")
-	@PrimaryKeyJoinColumn(name="SURVEY_ID",referencedColumnName="ID") //这个注解也并没有什么用，加不加都一样
+	@OneToOne(mappedBy="survey",  optional = false, cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//	@PrimaryKeyJoinColumn(name="SURVEY_ID",referencedColumnName="ID") //这个注解也并没有什么用，加不加都一样
 	private SurveySetting setting;
 
-	@Column(name="QUESTION_AMOUNT")
-	private int questionAmount;
+	@Column(name="QUESTION_COUNT")
+	private int questionCount;
 
-	@OneToMany(cascade=CascadeType.REMOVE,mappedBy="surveyId")
-	private List<Question> questions;
+	@OneToMany(mappedBy="survey",cascade=CascadeType.ALL, orphanRemoval = true)
+	private List<Question> questions = new ArrayList<>();
 
-	@OneToMany(cascade=CascadeType.REMOVE,mappedBy="surveyId")
-	private List<Quota> quotas;
+
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="survey",orphanRemoval = true)
+	private List<Quota> quotas = new ArrayList<>();
 
 	public String getUserId() {
 		return userId;
@@ -166,12 +168,12 @@ public class Survey extends IdIncrementEntity {
 		this.setting = setting;
 	}
 
-	public int getQuestionAmount() {
-		return questionAmount;
+	public int getQuestionCount() {
+		return questionCount;
 	}
 
-	public void setQuestionAmount(int questionAmount) {
-		this.questionAmount = questionAmount;
+	public void setQuestionCount(int questionCount) {
+		this.questionCount = questionCount;
 	}
 
 	public List<Question> getQuestions() {
@@ -190,4 +192,22 @@ public class Survey extends IdIncrementEntity {
 		this.quotas = quotas;
 	}
 
+	public Question getQuestion(Long questionId) {
+		if(questionId == null) {
+			return questions.get(0);
+		} else {
+			return questions.stream().filter(q->q.getId().equals(questionId)).findFirst().orElse(questions.get(0));
+		}
+	}
+
+	public 	Question getNextQuestionByIndex(Long questionId){
+		for(int i = 0; i < questions.size(); i++) {
+			if(questions.get(i).getId().equals(questionId)) {
+				if(questions.size() > i + 1) {
+					return questions.get(i + 1);
+				}
+			}
+		}
+		return questions.get(0);
+	}
 }

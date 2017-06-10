@@ -1,7 +1,8 @@
 package com.jikezhiji.survey.domain;
 
 
-import com.jikezhiji.survey.domain.id.MemberQuotaId;
+import com.jikezhiji.commons.domain.entity.JacksonSerializable;
+import com.jikezhiji.survey.domain.embedded.MemberQuotaId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,23 +16,32 @@ import java.io.Serializable;
 @Entity
 @Table(name="MEMBER_QUOTA")
 @IdClass(MemberQuotaId.class)
-public class MemberQuota implements Serializable{
+public class MemberQuota implements JacksonSerializable {
 
 	private static final long serialVersionUID = 1L;
+	@ManyToOne(targetEntity = Quota.class)
+	@JoinColumn(name="QUOTA_ID",updatable = false,insertable = false,foreignKey = @ForeignKey(name="FK_MEMBER_QUOTA_QUOTA_ID"))
+	private Quota quota;
 
 	@Id
-	@ManyToOne(targetEntity = Quota.class)
-	@JoinColumn(name="QUOTA_ID",foreignKey = @ForeignKey(name="FK_MEMBER_QUOTA_QUOTA_ID"))
+	@Column(name="QUOTA_ID")
 	private Long quotaId;
 
 	@Id
-	@ManyToOne(targetEntity = Question.class)
-	@JoinColumn(name="QUESTION_ID",foreignKey = @ForeignKey(name="FK_MEMBER_QUOTA_QUESTION_ID"))
+	@Column(name="QUESTION_ID",length = 32)
 	private Long questionId;
 
 	@Id
 	@Column(name="CODE",length = 32)
 	private String code;
+
+	public Quota getQuota() {
+		return quota;
+	}
+
+	public void setQuota(Quota quota) {
+		this.quota = quota;
+	}
 
 	public Long getQuotaId() {
 		return quotaId;

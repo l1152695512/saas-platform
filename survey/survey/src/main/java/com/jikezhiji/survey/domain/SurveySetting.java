@@ -1,94 +1,129 @@
 package com.jikezhiji.survey.domain;
 
 
-import com.jikezhiji.survey.domain.enumeration.AccessRule;
-import com.jikezhiji.survey.domain.enumeration.SurveyFormat;
-import com.jikezhiji.survey.domain.id.SurveySettingId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jikezhiji.commons.domain.entity.JacksonSerializable;
+import com.jikezhiji.survey.persistence.converter.LocaleConverter;
+import com.jikezhiji.survey.domain.embedded.AccessRule;
+import com.jikezhiji.survey.domain.embedded.SurveyFormat;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import java.util.Locale;
 
 @Table(name="SURVEY_SETTING")
 @javax.persistence.Entity
-@IdClass(SurveySettingId.class)
-public class SurveySetting implements Serializable{
+public class SurveySetting implements JacksonSerializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@MapsId("id")
-	@OneToOne(targetEntity=Survey.class)
-	@JoinColumn(name="SURVEY_ID",foreignKey = @ForeignKey(name="FK_SURVEY_SETTING_SURVEY_ID"))
+	@Column(name = "SURVEY_ID")
 	private Long surveyId;
-	
-	/** 外观模版，保留 */
-	@Column(name="TEMPLATE",length=32)
-	private String template;
-	
-	/** 是否提交后自动跳转 */
-	@Column(name="AUTO_REDIRECT")
-	private boolean autoRedirect;
-	
-	/** 是否显示欢迎信息 */
-	@Column(name="SHOW_WELCOME")
-	private boolean showWelcome;
-	
-	/** 是否显示答题进度 */
-	@Column(name="SHOW_PROGRESS")
-	private boolean showProgress;
-	
-	/** 是否显示分组信息 */
-	@Column(name="SHOW_GROUP_INFO")
-	private boolean showGroupInfo;
-	
-	/** 是否显示问题序号 */
-	@Column(name="SHOW_QUESTION_SEQ_NO")
-	private boolean showQuestionSeqNo;
-	
-	/** 是否允许上一步 */
-	@Column(name="ALLOW_PREV")
-	private boolean allowPrev;
 
-	/** 是否允许中断 */
-	@Column(name="ALLOW_SUSPEND")
-	private boolean allowSuspend;
-	
-	/** 是否允许完成后修改 */
-	@Column(name="ALLOW_EDIT_AFTER_COMPLETION")
-	private boolean allowEditAfterCompletion;
-	
-	/** 展示格式 */
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SURVEY_ID", foreignKey = @ForeignKey(name = "FK_SURVEY_SETTING_SURVEY_ID"))
+	@RestResource(exported = false)
+	@JsonIgnore
+	private Survey survey;
+
+	/**
+	 * 参与份数限制
+	 */
+	@Column(name = "RESPONSE_LIMIT")
+	private int responseLimit;
+
+	/**
+	 * 外观模版，保留
+	 */
+	@Column(name = "TEMPLATE", length = 32)
+	private String template;
+
+	/**
+	 * 展示格式
+	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name="FORMAT",length = 32)
+	@Column(name = "FORMAT", length = 32)
 	private SurveyFormat format = SurveyFormat.QUESTION_BY_QUESTION;
 
-	/** 默认的发布语言 */
-	@Column(name="LOCALE",length = 32)
-	private String locale;
-	
-	/** 参与份数限制 */
-	@Column(name="RESPONSE_LIMIT")
-	private int responseLimit;
-	
-	/** 访问权限 */
+	/**
+	 * 默认的发布语言
+	 */
+	@Column(name = "LOCALE", length = 32)
+	@Convert(converter = LocaleConverter.class)
+	private Locale locale = Locale.CHINA;
+
+	/**
+	 * 访问权限
+	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name="ACCESS_RULE",length = 32)
+	@Column(name = "ACCESS_RULE", length = 32)
 	private AccessRule accessRule = AccessRule.PUBLIC;
-	
-	/** 是否公开答题序号 */
-	@Column(name="OPEN_QUESTION_SEQ_NO")
-	private boolean openQuestionSeqNo;
-	
-	/** 是否公开结果 */
-	@Column(name="OPEN_STATISTICS")
-	private boolean openStatistics;
-	
-	/** 是否使用验证码，在提交时 */
-	@Column(name="USE_CAPTCHA")
-	private boolean useCaptcha;
-	
-	/** 是否启用评价模式 */
-	@Column(name="ENABLE_ASSESSMENT")
+
+	/**
+	 * 是否提交后自动跳转
+	 */
+	@Column(name = "AUTO_REDIRECT")
+	private boolean autoRedirect = true;
+
+	/**
+	 * 是否显示欢迎信息
+	 */
+	@Column(name = "SHOW_WELCOME")
+	private boolean showWelcome = true;
+
+	/**
+	 * 是否显示答题进度
+	 */
+	@Column(name = "SHOW_PROGRESS")
+	private boolean showProgress = true;
+
+	/**
+	 * 是否显示分组信息
+	 */
+	@Column(name = "SHOW_GROUP_INFO")
+	private boolean showGroupInfo = true;
+
+	/**
+	 * 是否显示问题序号
+	 */
+	@Column(name = "SHOW_QUESTION_INDEX")
+	private boolean showQuestionIndex = true;
+
+	/**
+	 * 是否公开结果
+	 */
+	@Column(name = "SHOW_RESPONSE")
+	private boolean showResponse;
+
+	/**
+	 * 是否允许上一步
+	 */
+	@Column(name = "ALLOW_PREV")
+	private boolean allowPrev;
+
+	/**
+	 * 是否允许中断
+	 */
+	@Column(name = "ALLOW_SUSPEND")
+	private boolean allowSuspend;
+
+	/**
+	 * 是否允许完成后修改
+	 */
+	@Column(name = "ALLOW_EDIT_AFTER_COMPLETION")
+	private boolean allowEditAfterCompletion;
+
+	/**
+	 * 是否使用验证码，在提交时
+	 */
+	@Column(name = "ENABLE_CAPTCHA")
+	private boolean enableCaptcha;
+
+	/**
+	 * 是否启用评价模式
+	 */
+	@Column(name = "ENABLE_ASSESSMENT")
 	private boolean enableAssessment;
 
 	public Long getSurveyId() {
@@ -99,12 +134,52 @@ public class SurveySetting implements Serializable{
 		this.surveyId = surveyId;
 	}
 
+	public Survey getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
+	}
+
+	public int getResponseLimit() {
+		return responseLimit;
+	}
+
+	public void setResponseLimit(int responseLimit) {
+		this.responseLimit = responseLimit;
+	}
+
 	public String getTemplate() {
 		return template;
 	}
 
 	public void setTemplate(String template) {
 		this.template = template;
+	}
+
+	public SurveyFormat getFormat() {
+		return format;
+	}
+
+	public void setFormat(SurveyFormat format) {
+		this.format = format;
+	}
+
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	public AccessRule getAccessRule() {
+		return accessRule;
+	}
+
+	public void setAccessRule(AccessRule accessRule) {
+		this.accessRule = accessRule;
 	}
 
 	public boolean isAutoRedirect() {
@@ -135,16 +210,25 @@ public class SurveySetting implements Serializable{
 		return showGroupInfo;
 	}
 
+
 	public void setShowGroupInfo(boolean showGroupInfo) {
 		this.showGroupInfo = showGroupInfo;
 	}
 
-	public boolean getShowQuestionSeqNo() {
-		return showQuestionSeqNo;
+	public boolean isShowQuestionIndex() {
+		return showQuestionIndex;
 	}
 
-	public void setShowQuestionSeqNo(boolean showQuestionSeqNo) {
-		this.showQuestionSeqNo = showQuestionSeqNo;
+	public void setShowQuestionIndex(boolean showQuestionIndex) {
+		this.showQuestionIndex = showQuestionIndex;
+	}
+
+	public boolean isShowResponse() {
+		return showResponse;
+	}
+
+	public void setShowResponse(boolean showResponse) {
+		this.showResponse = showResponse;
 	}
 
 	public boolean isAllowPrev() {
@@ -171,60 +255,12 @@ public class SurveySetting implements Serializable{
 		this.allowEditAfterCompletion = allowEditAfterCompletion;
 	}
 
-	public SurveyFormat getFormat() {
-		return format;
+	public boolean isEnableCaptcha() {
+		return enableCaptcha;
 	}
 
-	public void setFormat(SurveyFormat format) {
-		this.format = format;
-	}
-
-	public String getLocale() {
-		return locale;
-	}
-
-	public void setLocale(String locale) {
-		this.locale = locale;
-	}
-
-	public int getResponseLimit() {
-		return responseLimit;
-	}
-
-	public void setResponseLimit(int responseLimit) {
-		this.responseLimit = responseLimit;
-	}
-
-	public AccessRule getAccessRule() {
-		return accessRule;
-	}
-
-	public void setAccessRule(AccessRule accessRule) {
-		this.accessRule = accessRule;
-	}
-
-	public boolean isOpenQuestionSeqNo() {
-		return openQuestionSeqNo;
-	}
-
-	public void setOpenQuestionSeqNo(boolean openQuestionSeqNo) {
-		this.openQuestionSeqNo = openQuestionSeqNo;
-	}
-
-	public boolean isOpenStatistics() {
-		return openStatistics;
-	}
-
-	public void setOpenStatistics(boolean openStatistics) {
-		this.openStatistics = openStatistics;
-	}
-
-	public boolean isUseCaptcha() {
-		return useCaptcha;
-	}
-
-	public void setUseCaptcha(boolean useCaptcha) {
-		this.useCaptcha = useCaptcha;
+	public void setEnableCaptcha(boolean enableCaptcha) {
+		this.enableCaptcha = enableCaptcha;
 	}
 
 	public boolean isEnableAssessment() {

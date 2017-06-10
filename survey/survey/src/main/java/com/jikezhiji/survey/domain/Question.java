@@ -1,33 +1,43 @@
 package com.jikezhiji.survey.domain;
 
 
-import com.jikezhiji.commons.domain.entity.IdIncrementEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jikezhiji.commons.domain.converter.SimpleMapConverter;
-import com.jikezhiji.survey.domain.enumeration.QuestionType;
+import com.jikezhiji.commons.domain.entity.IdIncrementEntity;
+import com.jikezhiji.survey.persistence.converter.LogicCollectionConverter;
+import com.jikezhiji.survey.domain.embedded.QuestionLogic;
+import com.jikezhiji.survey.domain.embedded.QuestionType;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 
 @javax.persistence.Entity
-@Table(name = "QUESTION")
+@Table(name = "QUESTION",uniqueConstraints = @UniqueConstraint(name="UK_QUESTION_CODE",columnNames = "QUESTION_CODE"))
 @Converts({
-	@Convert(attributeName="content",converter = SimpleMapConverter.class)
+	@Convert(attributeName="content",converter = SimpleMapConverter.class),
+	@Convert(attributeName="jumpLogic",converter = LogicCollectionConverter.class)
 })
 public class Question extends IdIncrementEntity {
 
 	/**
 	 * 调查Id
 	 */
-	@ManyToOne(targetEntity = Survey.class)
-	@JoinColumn(name = "SURVEY_ID",foreignKey = @ForeignKey(name="FK_QUESTION_SURVEY_ID"))
+	@Column(name = "SURVEY_ID")
 	private Long surveyId;
+
+	@ManyToOne(targetEntity = Survey.class,fetch = FetchType.LAZY)
+	@JoinColumn(name = "SURVEY_ID",insertable = false,updatable = false,foreignKey = @ForeignKey(name="FK_QUESTION_SURVEY_ID"))
+	@RestResource(exported = false)
+	@JsonIgnore
+	private Survey survey;
+
 
 	/**
 	 * 父问题Id
 	 */
-	@ManyToOne(targetEntity = Question.class)
-	@JoinColumn(name = "PARENT_ID",foreignKey = @ForeignKey(name="FK_QUESTION_PARENT_ID"))
+	@Column(name = "PARENT_ID")
 	private Long parentId;
 
 	/**
@@ -52,7 +62,7 @@ public class Question extends IdIncrementEntity {
 	/**
 	 * 帮助文字
 	 */
-	@Column(name = "HELP",columnDefinition = "TEXT DEFAULT NULL")
+	@Column(name = "`HELP`",columnDefinition = "TEXT DEFAULT NULL")
 	private String help;
 
 	/**
@@ -64,8 +74,8 @@ public class Question extends IdIncrementEntity {
 	/**
 	 * 问题序号
 	 */
-	@Column(name = "SEQUENCE")
-	private int sequence;
+	@Column(name = "`INDEX`")
+	private int index;
 
 	/**
 	 * 是否必须作答
@@ -83,11 +93,8 @@ public class Question extends IdIncrementEntity {
 	@Column(name = "CONTENT",columnDefinition = "LONGTEXT DEFAULT NULL")
 	private Map<String, Object> content;
 
-
-	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="questionId")
-	private List<QuestionLogic> questionLogic;
-
-
+	@Column(name = "JUMP_LOGIC")
+	private List<QuestionLogic> jumpLogic;
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -95,6 +102,14 @@ public class Question extends IdIncrementEntity {
 
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
+	}
+
+	public Survey getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
 	}
 
 	public Long getParentId() {
@@ -105,19 +120,19 @@ public class Question extends IdIncrementEntity {
 		this.parentId = parentId;
 	}
 
-	public String getQuestionCode() {
+	public String getCode() {
 		return code;
 	}
 
-	public void setQuestionCode(String code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 
-	public QuestionType getQuestionType() {
+	public QuestionType getType() {
 		return type;
 	}
 
-	public void setQuestionType(QuestionType type) {
+	public void setType(QuestionType type) {
 		this.type = type;
 	}
 
@@ -145,12 +160,12 @@ public class Question extends IdIncrementEntity {
 		this.image = image;
 	}
 
-	public int getSequence() {
-		return sequence;
+	public int getIndex() {
+		return index;
 	}
 
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public boolean isMandatory() {
@@ -177,11 +192,38 @@ public class Question extends IdIncrementEntity {
 		this.content = content;
 	}
 
-	public List<QuestionLogic> getQuestionLogic() {
-		return questionLogic;
+	public List<QuestionLogic> getJumpLogic() {
+		return jumpLogic;
 	}
 
-	public void setQuestionLogic(List<QuestionLogic> questionLogic) {
-		this.questionLogic = questionLogic;
+	public void setJumpLogic(List<QuestionLogic> jumpLogic) {
+		this.jumpLogic = jumpLogic;
+	}
+
+	public Question(){
+
+	}
+	public Question(Long id) {
+		this.setId(id);
+	}
+	public Question(Long id,QuestionType type) {
+		this.setId(id);
+		this.type = type;
+	}
+
+	public Long runJumpLogic(String value,Question next){
+		if(jumpLogic == null || jumpLogic.isEmpty()) {
+			return next.getId();
+		}
+		QuestionLogic questionLogic = jumpLogic.stream().filter(logic -> logic.isMatch(value)).findFirst().orElse(null);
+		if(questionLogic == null) {
+			return next.getId();
+		} else {
+			return questionLogic.getTargetQuestionId();
+		}
+	}
+
+	public boolean validateAnswer(String value) {
+		return QuestionType.validate(this,value);
 	}
 }

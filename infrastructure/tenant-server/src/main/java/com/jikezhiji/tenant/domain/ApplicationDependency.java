@@ -53,6 +53,24 @@ public class ApplicationDependency {
         public void setDependencyApplicationId(String dependencyApplicationId) {
             this.dependencyApplicationId = dependencyApplicationId;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ApplicationDependencyPK that = (ApplicationDependencyPK) o;
+
+            if (!applicationId.equals(that.applicationId)) return false;
+            return dependencyApplicationId.equals(that.dependencyApplicationId);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = applicationId.hashCode();
+            result = 31 * result + dependencyApplicationId.hashCode();
+            return result;
+        }
     }
 
     public ApplicationDependency() {

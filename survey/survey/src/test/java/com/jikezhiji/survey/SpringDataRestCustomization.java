@@ -1,7 +1,5 @@
 package com.jikezhiji.survey;
 
-import com.jikezhiji.survey.domain.Survey;
-import com.jikezhiji.survey.domain.repository.SurveyRepository;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 

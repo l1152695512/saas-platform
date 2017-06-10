@@ -1,6 +1,8 @@
 package com.jikezhiji.survey.domain;
 
 
+import com.jikezhiji.commons.domain.entity.JacksonSerializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +12,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "SURVEY_ACCESS_TOKEN")
-public class SurveyAccessToken implements Serializable {
+public class SurveyAccessToken implements JacksonSerializable {
 
 	private static final long serialVersionUID = 1L;
 

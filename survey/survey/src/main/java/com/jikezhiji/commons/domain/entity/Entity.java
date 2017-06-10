@@ -1,5 +1,6 @@
 package com.jikezhiji.commons.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jikezhiji.commons.domain.listener.AutoFillingEntityListener;
 import org.springframework.data.domain.Persistable;
 
@@ -9,7 +10,8 @@ import java.util.Date;
 
 @MappedSuperclass
 @EntityListeners(AutoFillingEntityListener.class)
-public abstract class Entity<ID extends Serializable> implements Persistable<ID>{
+@JsonIgnoreProperties("new")
+public abstract class Entity<ID extends Serializable> implements JacksonSerializable, Persistable<ID>{
 
 
 	@Column(updatable=false,name="CREATE_TIME",insertable = false)
@@ -39,4 +41,18 @@ public abstract class Entity<ID extends Serializable> implements Persistable<ID>
 		return getId() == null;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Entity)) return false;
+
+		Entity<?> entity = (Entity<?>) o;
+
+		return getId() != null && getId().equals(entity.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getId() != null ? getId().hashCode() : 0;
+	}
 }
