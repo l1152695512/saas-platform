@@ -4,6 +4,11 @@ spring:
   cloud:
     config:
       enabled: false
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
 server:
   port: 8761
 eureka:

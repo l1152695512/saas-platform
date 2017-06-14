@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -111,9 +112,12 @@ public class ApplicationService {
     }
 
     private List<ApplicationDependency> getDependencies(Application application){
-        return application.getDependencies().stream()
+        if(application.getDependencies() != null) {
+            return application.getDependencies().stream()
                 .map(dependencyId -> new ApplicationDependency(application.getId(),dependencyId))
                 .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
 

@@ -4,7 +4,9 @@ package com.jikezhiji.survey.domain;
 import com.jikezhiji.commons.domain.entity.IdIncrementEntity;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @javax.persistence.Entity
@@ -15,17 +17,23 @@ public class SurveyResponse extends IdIncrementEntity {
 	@JoinColumn(name="SURVEY_ID",foreignKey = @ForeignKey(name="FK_SURVEY_RESPONSE_SURVEY_ID"))
 	private Long surveyId;
 
-	@Column(name="USER_ID",length = 32)
-	private String userId;
-
 	@Column(name="SERVICE_ID",length = 32)
 	private String serviceId;
+
+	/**
+	 * 如果不提供则为sessionId
+	 */
+	@Column(name="USER_ID",length = 32)
+	private String userId;
 
 	@Column(name="DEVICE_ID",length = 32)
 	private String deviceId;
 
 	@Column(name = "IP_ADDRESS",length = 32)
 	private String ipAddress;
+
+	@Column(name = "ACCESS_TOKEN",length = 32)
+	private String accessToken;
 
 	@Column(name = "LAST_QUESTION_ID")
 	private Long lastQuestionId;
@@ -34,7 +42,7 @@ public class SurveyResponse extends IdIncrementEntity {
 	 * 是否提交
 	 */
 	@Column(name = "SUBMITTED")
-	private Boolean submitted;
+	private boolean submitted;
 
 	/**
 	 * 开始时间
@@ -71,8 +79,7 @@ public class SurveyResponse extends IdIncrementEntity {
 	 * @return
 	 */
 	@OneToMany(mappedBy = "responseId", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<ResponseItem> items;
-
+	private Set<ResponseItem> items = new HashSet<>();
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -82,6 +89,13 @@ public class SurveyResponse extends IdIncrementEntity {
 		this.surveyId = surveyId;
 	}
 
+	public String getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
+	}
 
 	public String getUserId() {
 		return userId;
@@ -89,14 +103,6 @@ public class SurveyResponse extends IdIncrementEntity {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public String getServiceId() {
-		return serviceId;
-	}
-
-	public void setServiceId(String serviceId) {
-		this.serviceId = serviceId;
 	}
 
 	public String getDeviceId() {
@@ -115,6 +121,13 @@ public class SurveyResponse extends IdIncrementEntity {
 		this.ipAddress = ipAddress;
 	}
 
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
 
 	public Long getLastQuestionId() {
 		return lastQuestionId;
@@ -124,11 +137,11 @@ public class SurveyResponse extends IdIncrementEntity {
 		this.lastQuestionId = lastQuestionId;
 	}
 
-	public Boolean getSubmitted() {
+	public boolean isSubmitted() {
 		return submitted;
 	}
 
-	public void setSubmitted(Boolean submitted) {
+	public void setSubmitted(boolean submitted) {
 		this.submitted = submitted;
 	}
 
@@ -170,6 +183,38 @@ public class SurveyResponse extends IdIncrementEntity {
 
 	public void setItems(Set<ResponseItem> items) {
 		this.items = items;
+	}
+
+	public void addItems(ResponseItem ... items) {
+		if(items != null) {
+			ResponseItem last = items[items.length - 1];
+			this.lastQuestionId = last.getQuestionId();
+			if(this.items == null) {
+				this.items = new HashSet<>(Arrays.asList(items));
+			} else {
+				this.items.addAll(Arrays.asList(items));
+			}
+		}
+	}
+	public SurveyResponse(){
+
+	}
+	public SurveyResponse(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+	public SurveyResponse(Long surveyId,boolean submitted) {
+		this.surveyId = surveyId;
+		this.submitted = submitted;
+	}
+
+
+	public ResponseItem getItem(Long questionId) {
+		if(this.items == null) return null;
+		return this.items.stream().filter(item -> item.getQuestionId().equals(questionId)).findFirst().orElse(null);
+	}
+
+	public ResponseItem lastItem(){
+		return getItem(lastQuestionId);
 	}
 
 }

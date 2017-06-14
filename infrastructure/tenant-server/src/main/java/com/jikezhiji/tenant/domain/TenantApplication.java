@@ -114,6 +114,24 @@ public class TenantApplication {
         public void setApplicationId(String serviceId) {
             this.applicationId = serviceId;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TenantApplicationPK that = (TenantApplicationPK) o;
+
+            if (!tenantId.equals(that.tenantId)) return false;
+            return applicationId.equals(that.applicationId);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = tenantId.hashCode();
+            result = 31 * result + applicationId.hashCode();
+            return result;
+        }
     }
 
     public static class MapConverter implements AttributeConverter<Map<String,Object>, String> {

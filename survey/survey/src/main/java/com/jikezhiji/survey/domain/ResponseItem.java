@@ -1,6 +1,7 @@
 package com.jikezhiji.survey.domain;
 
-import com.jikezhiji.survey.domain.id.ResponseItemId;
+import com.jikezhiji.commons.domain.entity.JacksonSerializable;
+import com.jikezhiji.survey.domain.embedded.ResponseItemId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.util.Date;
 @Entity
 @Table(name = "RESPONSE_ITEM")
 @IdClass(ResponseItemId.class)
-public class ResponseItem implements Serializable{
+public class ResponseItem implements JacksonSerializable {
 
 	private static final long serialVersionUID = 1L;
 

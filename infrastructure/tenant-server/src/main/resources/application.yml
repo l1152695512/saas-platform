@@ -22,6 +22,9 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   aop:
     proxy-target-class: true
+  devtools:
+    livereload:
+      port: 35729
 
 server:
   port: 8762

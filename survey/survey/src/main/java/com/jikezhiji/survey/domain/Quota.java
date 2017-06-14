@@ -1,8 +1,11 @@
 package com.jikezhiji.survey.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jikezhiji.commons.domain.entity.IdIncrementEntity;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -10,9 +13,15 @@ import java.util.Set;
 public class Quota extends IdIncrementEntity {
 
 	/** 表单id */
-	@OneToOne(targetEntity = Survey.class)
-	@JoinColumn(name="SURVEY_ID",foreignKey = @ForeignKey(name="FK_QUOTA_SURVEY_ID"))
+	@Column(name="SURVEY_ID")
 	private Long surveyId;
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SURVEY_ID",insertable = false,updatable = false,foreignKey = @ForeignKey(name="FK_QUOTA_SURVEY_ID"))
+	@RestResource(exported = false)
+	@JsonIgnore
+	private Survey survey;
 
 	@Column(name="NAME")
 	private String name;
@@ -37,8 +46,8 @@ public class Quota extends IdIncrementEntity {
 	@Column(name="URL_DESCRIPTION")
 	private String urlDescription;
 
-	@OneToMany(mappedBy="quotaId", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<MemberQuota> members;
+	@OneToMany(mappedBy="quota",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<MemberQuota> members = new HashSet<>();
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -46,6 +55,14 @@ public class Quota extends IdIncrementEntity {
 
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
+	}
+
+	public Survey getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
 	}
 
 	public String getName() {
@@ -80,7 +97,7 @@ public class Quota extends IdIncrementEntity {
 		this.message = message;
 	}
 
-	public boolean getAutoLoadUrl() {
+	public boolean isAutoLoadUrl() {
 		return autoLoadUrl;
 	}
 
@@ -111,5 +128,13 @@ public class Quota extends IdIncrementEntity {
 
 	public void setMembers(Set<MemberQuota> members) {
 		this.members = members;
+	}
+
+	public Quota(){
+
+	}
+
+	public Quota(Long surveyId) {
+		this.surveyId = surveyId;
 	}
 }
